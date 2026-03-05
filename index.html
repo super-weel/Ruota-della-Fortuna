@@ -221,11 +221,17 @@ for(let n=1;n<=29;n++){
 
 // CARICA IMPOSTAZIONI DAL DATABASE
 async function loadSettings(){
+    spinBtn.disabled = true; // 🔹 disabiliti il pulsante finché non carica
     let docSnap = await getDoc(doc(db,"settings","wheel"));
     if(docSnap.exists()){
         forcedNumbers = docSnap.data().forcedNumbers.map(Number);
         bannedNumbers = docSnap.data().bannedNumbers.map(Number);
+    } else {
+        forcedNumbers = [];
+        bannedNumbers = [];
     }
+    spinCount = 0; // 🔹 reset spinCount
+    spinBtn.disabled = false; // 🔹 riabiliti il pulsante
 }
 await loadSettings();
 
