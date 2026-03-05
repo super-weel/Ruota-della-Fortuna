@@ -1,36 +1,103 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="it">
 <head>
-<title>Login</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Login Admin</title>
+
+<style>
+
+body{
+margin:0;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#0b111f;
+font-family:Arial;
+color:white;
+}
+
+.panel{
+background:#111a2e;
+padding:40px;
+border-radius:18px;
+width:320px;
+text-align:center;
+box-shadow:0 10px 25px rgba(0,0,0,0.5);
+}
+
+h2{
+margin-top:0;
+margin-bottom:25px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-bottom:15px;
+border-radius:10px;
+border:none;
+font-size:15px;
+}
+
+.btn{
+width:100%;
+padding:14px;
+border-radius:12px;
+border:0;
+font-weight:700;
+font-size:16px;
+cursor:pointer;
+background:#ff9c2f;
+color:black;
+}
+
+.error{
+margin-top:15px;
+color:#ff6b6b;
+font-size:14px;
+}
+
+</style>
 </head>
 
 <body>
 
-<h2>Login Admin</h2>
+<div class="panel">
 
-<input id="user" placeholder="username">
-<br><br>
+<h2>Login amministratore</h2>
 
-<input id="pass" type="password" placeholder="password">
-<br><br>
+<input id="username" placeholder="Username">
 
-<button onclick="login()">Login</button>
+<input id="password" type="password" placeholder="Password">
+
+<button class="btn" onclick="login()">Accedi</button>
+
+<div id="error" class="error"></div>
+
+</div>
 
 <script>
 
+const USER = "staff";
+const PASS = "ruota123";
+
 function login(){
 
-let u=document.getElementById("user").value;
-let p=document.getElementById("pass").value;
+let u = document.getElementById("username").value;
+let p = document.getElementById("password").value;
 
-if(u==="staff" && p==="ruota123"){
+if(u === USER && p === PASS){
 
-localStorage.setItem("admin","true");
-location.href="admin.html";
+localStorage.setItem("logged","true");
+
+window.location.href = "admin.html";
 
 }else{
 
-alert("Credenziali sbagliate");
+document.getElementById("error").innerText = "Credenziali errate";
 
 }
 
