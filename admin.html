@@ -3,28 +3,101 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin Ruota</title>
+
+<title>Pannello Admin</title>
+
 <style>
-body{background:#0b111f;color:white;font-family:Arial;text-align:center;padding:50px;}
-input,button{padding:10px;margin:5px;border-radius:8px;border:none;font-size:16px;}
-button{background:#2f7cff;color:white;cursor:pointer;}
+
+body{
+margin:0;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#0b111f;
+font-family:Arial;
+color:white;
+}
+
+.panel{
+background:#111a2e;
+padding:35px;
+border-radius:18px;
+width:360px;
+text-align:center;
+}
+
+h2{
+margin-top:0;
+margin-bottom:25px;
+}
+
+label{
+display:block;
+text-align:left;
+margin-bottom:6px;
+font-weight:bold;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-bottom:18px;
+border-radius:10px;
+border:none;
+font-size:15px;
+}
+
+.btn{
+padding:14px 18px;
+border-radius:12px;
+border:0;
+font-weight:700;
+font-size:16px;
+cursor:pointer;
+background:#ff9c2f;
+width:100%;
+}
+
+.success{
+margin-top:15px;
+color:#7CFC9A;
+}
+
 </style>
 </head>
+
 <body>
 
-<h1>Admin Ruota</h1>
-<p>Numeri forzati (separati da virgola):</p>
-<input id="forcedInput" placeholder="es: 1,2,3">
-<p>Numeri vietati (separati da virgola):</p>
-<input id="bannedInput" placeholder="es: 6,10">
-<br>
-<button id="saveBtn">Salva Impostazioni</button>
+<div class="panel">
+
+<h2>Pannello amministratore</h2>
+
+<label>Numeri che devono uscire (separati da virgola)</label>
+<input id="forcedNumbers" placeholder="es: 1,5,8">
+
+<label>Numeri che NON devono uscire</label>
+<input id="bannedNumbers" placeholder="es: 6,10">
+
+<button class="btn" onclick="save()">Salva impostazioni</button>
+
+<div id="msg" class="success"></div>
+
+</div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// 🔹 METTI QUI IL TUO FIREBASE CONFIG
+/* 🔐 CONTROLLO LOGIN */
+
+if(localStorage.getItem("logged") !== "true"){
+window.location.href = "login.html";
+}
+
+/* 🔥 FIREBASE */
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyBT6NIPqhYaMIWcfvkNcPhkh9-_2D21BS8",
   authDomain: "ruota-fortuna.firebaseapp.com",
@@ -37,25 +110,55 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const forcedInput = document.getElementById("forcedInput");
-const bannedInput = document.getElementById("bannedInput");
-const saveBtn = document.getElementById("saveBtn");
+/* CARICA DATI */
 
-saveBtn.onclick = async ()=>{
-    let forcedNumbers = forcedInput.value.split(",").map(n=>Number(n.trim())).filter(n=>!isNaN(n));
-    let bannedNumbers = bannedInput.value.split(",").map(n=>Number(n.trim())).filter(n=>!isNaN(n));
+async function load(){
 
-    await setDoc(doc(db,"settings","wheel"),{
-        forcedNumbers,
-        bannedNumbers
-    });
-    alert("Impostazioni salvate!");
+const docRef = doc(db,"settings","wheel");
+const snap = await getDoc(docRef);
+
+if(snap.exists()){
+
+document.getElementById("forcedNumbers").value =
+snap.data().forcedNumbers.join(",");
+
+document.getElementById("bannedNumbers").value =
+snap.data().bannedNumbers.join(",");
+
 }
+
+}
+
+load();
+
+/* SALVA DATI */
+
+window.save = async function(){
+
+let forced =
+document.getElementById("forcedNumbers").value
+.split(",")
+.map(n => Number(n.trim()))
+.filter(n => !isNaN(n));
+
+let banned =
+document.getElementById("bannedNumbers").value
+.split(",")
+.map(n => Number(n.trim()))
+.filter(n => !isNaN(n));
+
+await setDoc(doc(db,"settings","wheel"),{
+
+forcedNumbers: forced,
+bannedNumbers: banned
+
+});
+
+document.getElementById("msg").innerText = "Impostazioni salvate ✔";
+
+};
+
 </script>
-
-  if(localStorage.getItem("logged") !== "true"){
-window.location.href = "login.html";
-}
 
 </body>
 </html>
