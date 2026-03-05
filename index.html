@@ -7,117 +7,127 @@
 
 <style>
 :root{
-  --size:520px;
-  --pointer-size:34px;
-  --bg: radial-gradient(circle at 50% 20%, #162236 0%, #0b111f 100%);
+--size:520px;
+--pointer-size:34px;
 }
 
 body{
-  margin:0;
-  height:100vh;
-  background:var(--bg);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-family:Inter,system-ui,sans-serif;
-  color:#e6eef8;
+margin:0;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#0b111f;
+font-family:Arial;
+color:white;
+flex-direction:column;
 }
 
 .container{
-  display:grid;
-  grid-template-columns:1fr 300px;
-  gap:30px;
-  align-items:center;
+display:grid;
+grid-template-columns:1fr 300px;
+gap:30px;
+align-items:center;
 }
 
 .panel{
-  background:rgba(255,255,255,0.03);
-  padding:20px;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.05);
-  box-shadow:0 10px 30px rgba(2,6,23,0.6);
+background:#111a2e;
+padding:20px;
+border-radius:18px;
 }
 
 .wheel-wrap{
-  width:var(--size);
-  height:var(--size);
-  position:relative;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+width:var(--size);
+height:var(--size);
+position:relative;
+display:flex;
+align-items:center;
+justify-content:center;
 }
 
 .wheel{
-  width:92%;
-  height:92%;
-  border-radius:50%;
-  border:8px solid rgba(255,255,255,0.05);
-  box-shadow:0 18px 40px rgba(4,8,20,0.6), inset 0 4px 20px rgba(255,255,255,0.02);
-  transition:transform 3.5s cubic-bezier(.1,.85,.35,1);
+width:92%;
+height:92%;
+border-radius:50%;
+transition:transform 3.5s cubic-bezier(.1,.85,.35,1);
 }
 
 .pointer{
-  position:absolute;
-  top:-18px;
-  left:50%;
-  transform:translateX(-50%);
-  width:0;
-  height:0;
-  border-left:var(--pointer-size) solid transparent;
-  border-right:var(--pointer-size) solid transparent;
-  border-bottom:calc(var(--pointer-size) + 10px) solid #ffecb3;
+position:absolute;
+top:-18px;
+left:50%;
+transform:translateX(-50%);
+width:0;
+height:0;
+border-left:var(--pointer-size) solid transparent;
+border-right:var(--pointer-size) solid transparent;
+border-bottom:40px solid #ffd27a;
 }
 
 .center{
-  position:absolute;
-  width:28%;
-  height:28%;
-  border-radius:50%;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03));
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:bold;
+position:absolute;
+width:28%;
+height:28%;
+border-radius:50%;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:#0f1629;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:bold;
 }
 
 .label{
-  position:absolute;
-  top:50%;
-  left:50%;
-  font-weight:700;
-  font-size:13px;
-  color:#02101a;
-  padding:6px 10px;
-  border-radius:6px;
-  background:white;
-  transform:translate(-50%,-50%);
+position:absolute;
+top:50%;
+left:50%;
+font-weight:700;
+font-size:13px;
+background:white;
+color:black;
+padding:4px 8px;
+border-radius:6px;
+transform:translate(-50%,-50%);
 }
 
 .btn{
-  padding:14px 18px;
-  border-radius:12px;
-  border:0;
-  font-weight:700;
-  font-size:16px;
-  cursor:pointer;
-  background:linear-gradient(180deg,#ffb84b,#ff8f2b);
-  color:#081321;
+padding:14px 18px;
+border-radius:12px;
+border:0;
+font-weight:700;
+font-size:16px;
+cursor:pointer;
+background:#ff9c2f;
+margin-top:10px;
 }
 
 .result{
-  margin-top:16px;
-  padding:12px;
-  border-radius:10px;
-  background:rgba(255,255,255,0.05);
-  text-align:center;
+margin-top:16px;
+padding:12px;
+background:#0f1629;
+border-radius:10px;
+text-align:center;
+}
+
+.login-btn{
+margin-bottom:20px;
+padding:10px 15px;
+border:none;
+border-radius:10px;
+background:#2f7cff;
+color:white;
+font-weight:bold;
+cursor:pointer;
 }
 </style>
 </head>
 
 <body>
+
+<!-- PULSANTE LOGIN -->
+<button class="login-btn" onclick="location.href='login.html'">Login Admin</button>
 
 <div class="container">
 
@@ -130,18 +140,36 @@ body{
 </div>
 
 <div class="panel">
-<button id="spinBtn" class="btn">Gira la ruota!</button>
-<div id="result" class="result">Premi <strong>Gira la ruota!</strong></div>
+<button id="spinBtn" class="btn">Gira la ruota</button>
+<div id="result" class="result">Premi il bottone</div>
 </div>
 
 </div>
 
-<script>
+<script type="module">
 
+// FIREBASE
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// 🚨 METTI QUI IL TUO FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "XXXXXXXXXXXX",
+  authDomain: "XXXXXXXXXXXX",
+  projectId: "XXXXXXXXXXXX",
+  storageBucket: "XXXXXXXXXXXX",
+  messagingSenderId: "XXXXXXXXXXXX",
+  appId: "XXXXXXXXXXXX"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// RUOTA
 const totalSegments = 29;
-const wheel = document.getElementById('wheel');
-const spinBtn = document.getElementById('spinBtn');
-const resultDiv = document.getElementById('result');
+const wheel = document.getElementById("wheel");
+const spinBtn = document.getElementById("spinBtn");
+const resultDiv = document.getElementById("result");
 
 const anglePer = 360 / totalSegments;
 
@@ -149,103 +177,89 @@ let currentRotation = 0;
 let spinCount = 0;
 let spinning = false;
 
-/* numeri iniziali controllati */
-const forcedNumbers = [23,19,22];
+let forcedNumbers = [];
+let bannedNumbers = [];
 
-/* costruzione ruota */
+// COSTRUZIONE GRAFICA RUOTA
 function buildGradient(){
-let stops=[];
-for(let i=0;i<totalSegments;i++){
-let hue=(i/totalSegments)*360;
-stops.push(`hsl(${hue} 70% 55%) ${i*anglePer}deg ${(i+1)*anglePer}deg`);
-}
-return `conic-gradient(${stops.join(",")})`;
+    let stops=[];
+    for(let i=0;i<totalSegments;i++){
+        let hue=(i/totalSegments)*360;
+        stops.push(`hsl(${hue} 70% 55%) ${i*anglePer}deg ${(i+1)*anglePer}deg`);
+    }
+    return `conic-gradient(${stops.join(",")})`;
 }
 
-wheel.style.background=buildGradient();
-
-/* numeri sulla ruota */
+wheel.style.background = buildGradient();
 
 for(let n=1;n<=29;n++){
+    let el=document.createElement("div");
+    el.className="label";
+    el.textContent=n;
 
-let el=document.createElement("div");
-el.className="label";
-el.textContent=n;
+    let angle=(n-1)*anglePer+anglePer/2;
+    let r=42;
+    let x=50+Math.cos(angle*Math.PI/180-Math.PI/2)*r;
+    let y=50+Math.sin(angle*Math.PI/180-Math.PI/2)*r;
 
-let angle=(n-1)*anglePer+anglePer/2;
+    el.style.left=x+"%";
+    el.style.top=y+"%";
 
-let r=42;
-
-let x=50+Math.cos(angle*Math.PI/180-Math.PI/2)*r;
-let y=50+Math.sin(angle*Math.PI/180-Math.PI/2)*r;
-
-el.style.left=x+"%";
-el.style.top=y+"%";
-
-wheel.appendChild(el);
-
+    wheel.appendChild(el);
 }
 
-/* numero da estrarre */
+// CARICA IMPOSTAZIONI DAL DATABASE
+async function loadSettings(){
+    let docSnap = await getDoc(doc(db,"settings","wheel"));
+    if(docSnap.exists()){
+        forcedNumbers = docSnap.data().forcedNumbers.map(Number);
+        bannedNumbers = docSnap.data().bannedNumbers.map(Number);
+    }
+}
+await loadSettings();
 
+// SCELTA NUMERO
 function getNumber(){
-
-if(spinCount < forcedNumbers.length){
-return forcedNumbers[spinCount];
+    if(spinCount < forcedNumbers.length){
+        return forcedNumbers[spinCount];
+    }
+    let num;
+    do{
+        num = Math.floor(Math.random()*29)+1;
+    } while(bannedNumbers.includes(num));
+    return num;
 }
 
-return Math.floor(Math.random()*29)+1;
-
-}
-
-/* rotazione corretta */
-
+// CALCOLO ROTAZIONE
 function getRotation(num){
-
-let index=num-1;
-
-let angleCenter=index*anglePer+anglePer/2;
-
-let base=(360-angleCenter)%360;
-
-let extraSpins=Math.floor(Math.random()*3)+8;
-
-let normalized=currentRotation%360;
-
-let adjust=(360-normalized+base)%360;
-
-return currentRotation + extraSpins*360 + adjust;
-
+    let index=num-1;
+    let angleCenter=index*anglePer+anglePer/2;
+    let base=(360-angleCenter)%360;
+    let extraSpins=Math.floor(Math.random()*3)+8;
+    let normalized=currentRotation%360;
+    let adjust=(360-normalized+base)%360;
+    return currentRotation + extraSpins*360 + adjust;
 }
 
-/* spin */
-
+// SPIN
 function spin(){
+    if(spinning) return;
+    spinning=true;
+    spinBtn.disabled=true;
 
-if(spinning) return;
+    let number=getNumber();
+    spinCount++;
 
-spinning=true;
-spinBtn.disabled=true;
+    let finalRotation=getRotation(number);
 
-let number=getNumber();
-spinCount++;
+    wheel.style.transform=`rotate(${finalRotation}deg)`;
 
-let finalRotation=getRotation(number);
-
-wheel.style.transition="transform 3.5s cubic-bezier(.1,.85,.35,1)";
-wheel.style.transform=`rotate(${finalRotation}deg)`;
-
-setTimeout(()=>{
-
-currentRotation=finalRotation;
-
-resultDiv.innerHTML=`È uscito il numero <strong>${number}</strong>`;
-
-spinning=false;
-spinBtn.disabled=false;
-
-},3500);
-
+    setTimeout(()=>{
+        currentRotation=finalRotation;
+        resultDiv.innerHTML=`È uscito il numero <strong>${number}</strong>`;
+        spinning=false;
+        spinBtn.disabled=false;
+    },3500);
 }
 
 spinBtn.onclick=spin;
