@@ -154,23 +154,12 @@ import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10
 
 // 🚨 METTI QUI IL TUO FIREBASE CONFIG
 const firebaseConfig = {
-  // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
   apiKey: "AIzaSyBT6NIPqhYaMIWcfvkNcPhkh9-_2D21BS8",
   authDomain: "ruota-fortuna.firebaseapp.com",
   projectId: "ruota-fortuna",
   storageBucket: "ruota-fortuna.firebasestorage.app",
   messagingSenderId: "1083598318489",
   appId: "1:1083598318489:web:ef9bd70453415c6a5ec108"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
 };
 
 const app = initializeApp(firebaseConfig);
@@ -221,7 +210,7 @@ for(let n=1;n<=29;n++){
 
 // CARICA IMPOSTAZIONI DAL DATABASE
 async function loadSettings(){
-    spinBtn.disabled = true; // 🔹 disabiliti il pulsante finché non carica
+    spinBtn.disabled = true; // disabilita fino a caricamento
     let docSnap = await getDoc(doc(db,"settings","wheel"));
     if(docSnap.exists()){
         forcedNumbers = docSnap.data().forcedNumbers.map(Number);
@@ -230,8 +219,8 @@ async function loadSettings(){
         forcedNumbers = [];
         bannedNumbers = [];
     }
-    spinCount = 0; // 🔹 reset spinCount
-    spinBtn.disabled = false; // 🔹 riabiliti il pulsante
+    spinCount = 0; // resetta spinCount
+    spinBtn.disabled = false; // riabilita pulsante
 }
 await loadSettings();
 
