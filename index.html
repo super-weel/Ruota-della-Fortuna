@@ -126,11 +126,10 @@ cursor:pointer;
 
 <body>
 
-<!-- PULSANTE LOGIN -->
+<!-- LOGIN -->
 <button class="login-btn" onclick="location.href='login.html'">Login Admin</button>
 
 <div class="container">
-
 <div class="panel">
 <div class="wheel-wrap">
 <div class="pointer"></div>
@@ -143,16 +142,14 @@ cursor:pointer;
 <button id="spinBtn" class="btn">Gira la ruota</button>
 <div id="result" class="result">Premi il bottone</div>
 </div>
-
 </div>
 
 <script type="module">
 
-// FIREBASE
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// 🚨 METTI QUI IL TUO FIREBASE CONFIG
+// 🔹 METTI QUI IL TUO FIREBASE CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyBT6NIPqhYaMIWcfvkNcPhkh9-_2D21BS8",
   authDomain: "ruota-fortuna.firebaseapp.com",
@@ -165,12 +162,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// RUOTA
 const totalSegments = 29;
 const wheel = document.getElementById("wheel");
 const spinBtn = document.getElementById("spinBtn");
 const resultDiv = document.getElementById("result");
-
 const anglePer = 360 / totalSegments;
 
 let currentRotation = 0;
@@ -180,55 +175,57 @@ let spinning = false;
 let forcedNumbers = [];
 let bannedNumbers = [];
 
-// COSTRUZIONE GRAFICA RUOTA
+// RUOTA GRAFICA
 function buildGradient(){
-    let stops=[];
-    for(let i=0;i<totalSegments;i++){
-        let hue=(i/totalSegments)*360;
-        stops.push(`hsl(${hue} 70% 55%) ${i*anglePer}deg ${(i+1)*anglePer}deg`);
-    }
-    return `conic-gradient(${stops.join(",")})`;
+  let stops=[];
+  for(let i=0;i<totalSegments;i++){
+      let hue=(i/totalSegments)*360;
+      stops.push(`hsl(${hue} 70% 55%) ${i*anglePer}deg ${(i+1)*anglePer}deg`);
+  }
+  return `conic-gradient(${stops.join(",")})`;
 }
 
 wheel.style.background = buildGradient();
 
 for(let n=1;n<=29;n++){
-    let el=document.createElement("div");
-    el.className="label";
-    el.textContent=n;
-
-    let angle=(n-1)*anglePer+anglePer/2;
-    let r=42;
-    let x=50+Math.cos(angle*Math.PI/180-Math.PI/2)*r;
-    let y=50+Math.sin(angle*Math.PI/180-Math.PI/2)*r;
-
-    el.style.left=x+"%";
-    el.style.top=y+"%";
-
-    wheel.appendChild(el);
+  let el=document.createElement("div");
+  el.className="label";
+  el.textContent=n;
+  let angle=(n-1)*anglePer+anglePer/2;
+  let r=42;
+  let x=50+Math.cos(angle*Math.PI/180-Math.PI/2)*r;
+  let y=50+Math.sin(angle*Math.PI/180-Math.PI/2)*r;
+  el.style.left=x+"%";
+  el.style.top=y+"%";
+  wheel.appendChild(el);
 }
 
-// CARICA IMPOSTAZIONI DAL DATABASE
+// CARICA NUMERI FIREBASE
 async function loadSettings(){
-    spinBtn.disabled = true; // disabilita fino a caricamento
-    let docSnap = await getDoc(doc(db,"settings","wheel"));
-    if(docSnap.exists()){
-        forcedNumbers = docSnap.data().forcedNumbers.map(Number);
-        bannedNumbers = docSnap.data().bannedNumbers.map(Number);
-    } else {
+    spinBtn.disabled=true;
+    try{
+        let docSnap = await getDoc(doc(db,"settings","wheel"));
+        if(docSnap.exists()){
+            forcedNumbers = (docSnap.data().forcedNumbers || []).map(n=>Number(n));
+            bannedNumbers = (docSnap.data().bannedNumbers || []).map(n=>Number(n));
+        } else {
+            forcedNumbers = [];
+            bannedNumbers = [];
+        }
+        spinCount = 0;
+    } catch(e){
+        console.error("Errore caricamento dati:", e);
         forcedNumbers = [];
         bannedNumbers = [];
+        spinCount = 0;
     }
-    spinCount = 0; // resetta spinCount
-    spinBtn.disabled = false; // riabilita pulsante
+    spinBtn.disabled=false;
 }
 await loadSettings();
 
 // SCELTA NUMERO
 function getNumber(){
-    if(spinCount < forcedNumbers.length){
-        return forcedNumbers[spinCount];
-    }
+    if(spinCount < forcedNumbers.length) return forcedNumbers[spinCount];
     let num;
     do{
         num = Math.floor(Math.random()*29)+1;
@@ -257,7 +254,6 @@ function spin(){
     spinCount++;
 
     let finalRotation=getRotation(number);
-
     wheel.style.transform=`rotate(${finalRotation}deg)`;
 
     setTimeout(()=>{
