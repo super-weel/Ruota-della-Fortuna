@@ -1,43 +1,30 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="it">
 <head>
-<title>Admin</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Ruota</title>
+<style>
+body{background:#0b111f;color:white;font-family:Arial;text-align:center;padding:50px;}
+input,button{padding:10px;margin:5px;border-radius:8px;border:none;font-size:16px;}
+button{background:#2f7cff;color:white;cursor:pointer;}
+</style>
 </head>
-
 <body>
 
-<h2>Pannello Ruota</h2>
-
-Numeri forzati (separati da virgola)
-
-<br><br>
-
-<input id="forced">
-
-<br><br>
-
-Numeri vietati
-
-<br><br>
-
-<input id="banned">
-
-<br><br>
-
-<button onclick="save()">Salva</button>
+<h1>Admin Ruota</h1>
+<p>Numeri forzati (separati da virgola):</p>
+<input id="forcedInput" placeholder="es: 1,2,3">
+<p>Numeri vietati (separati da virgola):</p>
+<input id="bannedInput" placeholder="es: 6,10">
+<br>
+<button id="saveBtn">Salva Impostazioni</button>
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig = {
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
+// 🔹 METTI QUI IL TUO FIREBASE CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyBT6NIPqhYaMIWcfvkNcPhkh9-_2D21BS8",
   authDomain: "ruota-fortuna.firebaseapp.com",
@@ -47,29 +34,23 @@ const firebaseConfig = {
   appId: "1:1083598318489:web:ef9bd70453415c6a5ec108"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-};
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-async function save(){
+const forcedInput = document.getElementById("forcedInput");
+const bannedInput = document.getElementById("bannedInput");
+const saveBtn = document.getElementById("saveBtn");
 
-let forced=document.getElementById("forced").value.split(",");
-let banned=document.getElementById("banned").value.split(",");
+saveBtn.onclick = async ()=>{
+    let forcedNumbers = forcedInput.value.split(",").map(n=>Number(n.trim())).filter(n=>!isNaN(n));
+    let bannedNumbers = bannedInput.value.split(",").map(n=>Number(n.trim())).filter(n=>!isNaN(n));
 
-await setDoc(doc(db,"settings","wheel"),{
-
-forcedNumbers:forced,
-bannedNumbers:banned
-
-});
-
-alert("Salvato!");
-
+    await setDoc(doc(db,"settings","wheel"),{
+        forcedNumbers,
+        bannedNumbers
+    });
+    alert("Impostazioni salvate!");
 }
-
 </script>
 
 </body>
