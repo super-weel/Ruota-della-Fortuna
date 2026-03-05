@@ -1,1 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin</title>
+</head>
 
+<body>
+
+<h2>Pannello Ruota</h2>
+
+Numeri forzati (separati da virgola)
+
+<br><br>
+
+<input id="forced">
+
+<br><br>
+
+Numeri vietati
+
+<br><br>
+
+<input id="banned">
+
+<br><br>
+
+<button onclick="save()">Salva</button>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBT6NIPqhYaMIWcfvkNcPhkh9-_2D21BS8",
+  authDomain: "ruota-fortuna.firebaseapp.com",
+  projectId: "ruota-fortuna",
+  storageBucket: "ruota-fortuna.firebasestorage.app",
+  messagingSenderId: "1083598318489",
+  appId: "1:1083598318489:web:ef9bd70453415c6a5ec108"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function save(){
+
+let forced=document.getElementById("forced").value.split(",");
+let banned=document.getElementById("banned").value.split(",");
+
+await setDoc(doc(db,"settings","wheel"),{
+
+forcedNumbers:forced,
+bannedNumbers:banned
+
+});
+
+alert("Salvato!");
+
+}
+
+</script>
+
+</body>
+</html>
