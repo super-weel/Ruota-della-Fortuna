@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>Pannello Admin</title>
+<title>Login Admin</title>
 
 <style>
 
@@ -21,10 +21,11 @@ color:white;
 
 .panel{
 background:#111a2e;
-padding:35px;
+padding:40px;
 border-radius:18px;
-width:360px;
+width:320px;
 text-align:center;
+box-shadow:0 10px 25px rgba(0,0,0,0.5);
 }
 
 h2{
@@ -32,36 +33,31 @@ margin-top:0;
 margin-bottom:25px;
 }
 
-label{
-display:block;
-text-align:left;
-margin-bottom:6px;
-font-weight:bold;
-}
-
 input{
 width:100%;
 padding:12px;
-margin-bottom:18px;
+margin-bottom:15px;
 border-radius:10px;
 border:none;
 font-size:15px;
 }
 
 .btn{
-padding:14px 18px;
+width:100%;
+padding:14px;
 border-radius:12px;
 border:0;
 font-weight:700;
 font-size:16px;
 cursor:pointer;
 background:#ff9c2f;
-width:100%;
+color:black;
 }
 
-.success{
+.error{
 margin-top:15px;
-color:#7CFC9A;
+color:#ff6b6b;
+font-size:14px;
 }
 
 </style>
@@ -71,92 +67,41 @@ color:#7CFC9A;
 
 <div class="panel">
 
-<h2>Pannello amministratore</h2>
+<h2>Login amministratore</h2>
 
-<label>Numeri che devono uscire (separati da virgola)</label>
-<input id="forcedNumbers" placeholder="es: 1,5,8">
+<input id="username" placeholder="Username">
 
-<label>Numeri che NON devono uscire</label>
-<input id="bannedNumbers" placeholder="es: 6,10">
+<input id="password" type="password" placeholder="Password">
 
-<button class="btn" onclick="save()">Salva impostazioni</button>
+<button class="btn" onclick="login()">Accedi</button>
 
-<div id="msg" class="success"></div>
+<div id="error" class="error"></div>
 
 </div>
 
-<script type="module">
+<script>
 
-/* 🔐 CONTROLLO LOGIN */
+const USER = "staff";
+const PASS = "ruota123";
 
-if(localStorage.getItem("logged") !== "true"){
-window.location.href = "login.html";
-}
+function login(){
 
-/* 🔥 FIREBASE */
+let u = document.getElementById("username").value;
+let p = document.getElementById("password").value;
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+if(u === USER && p === PASS){
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBT6NIPqhYaMIWcfvkNcPhkh9-_2D21BS8",
-  authDomain: "ruota-fortuna.firebaseapp.com",
-  projectId: "ruota-fortuna",
-  storageBucket: "ruota-fortuna.firebasestorage.app",
-  messagingSenderId: "1083598318489",
-  appId: "1:1083598318489:web:ef9bd70453415c6a5ec108"
-};
+localStorage.setItem("logged","true");
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+window.location.href = "admin.html";
 
-/* CARICA DATI */
+}else{
 
-async function load(){
-
-const docRef = doc(db,"settings","wheel");
-const snap = await getDoc(docRef);
-
-if(snap.exists()){
-
-document.getElementById("forcedNumbers").value =
-snap.data().forcedNumbers.join(",");
-
-document.getElementById("bannedNumbers").value =
-snap.data().bannedNumbers.join(",");
+document.getElementById("error").innerText = "Credenziali errate";
 
 }
 
 }
-
-load();
-
-/* SALVA DATI */
-
-window.save = async function(){
-
-let forced =
-document.getElementById("forcedNumbers").value
-.split(",")
-.map(n => Number(n.trim()))
-.filter(n => !isNaN(n));
-
-let banned =
-document.getElementById("bannedNumbers").value
-.split(",")
-.map(n => Number(n.trim()))
-.filter(n => !isNaN(n));
-
-await setDoc(doc(db,"settings","wheel"),{
-
-forcedNumbers: forced,
-bannedNumbers: banned
-
-});
-
-document.getElementById("msg").innerText = "Impostazioni salvate ✔";
-
-};
 
 </script>
 
